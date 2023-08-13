@@ -11,7 +11,6 @@ import {
   Text,
   Center,
   Space,
-  Checkbox,
   MultiSelect,
 } from "@mantine/core";
 import { useColorScheme, useLocalStorage } from "@mantine/hooks";
@@ -72,14 +71,38 @@ export default function App() {
     (country) => continentFilters[country.continent]
   );
 
+  const getRandomCountryWithDistance = (lastIndex: number | null) => {
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * filteredCountries.length);
+    } while (lastIndex !== null && Math.abs(newIndex - lastIndex) <= 20);
+    return newIndex;
+  };
+
   const getRandomCountries = () => {
-    const filteredAndShuffledCountries = filteredCountries.sort(
-      () => 0.5 - Math.random()
+    const lastRandomIndex = randomCountry
+      ? filteredCountries.indexOf(randomCountry)
+      : null;
+    const randomIndex = getRandomCountryWithDistance(lastRandomIndex);
+
+    const selected = [randomIndex];
+    let count = 1;
+
+    while (count < 4) {
+      const newIndex = getRandomCountryWithDistance(
+        selected[selected.length - 1]
+      );
+      selected.push(newIndex);
+      count++;
+    }
+
+    const selectedCountriesArray = selected.map(
+      (index) => filteredCountries[index]
     );
-    const selected = filteredAndShuffledCountries.slice(0, 4);
-    setSelectedCountries(selected);
-    const randomIndex = Math.floor(Math.random() * selected.length);
-    setRandomCountry(selected[randomIndex]);
+    setSelectedCountries(selectedCountriesArray);
+
+    setRandomCountry(selectedCountriesArray[0]);
+    setCorrectCountryInfo("");
   };
 
   const compareCountry = (
