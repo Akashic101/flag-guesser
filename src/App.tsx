@@ -163,9 +163,7 @@ export default function App() {
             {randomCountry ? (
               <div
                 style={{
-                  boxShadow: "#000000",
-                  margin: "0px",
-                  padding: "0px",
+                  boxShadow: "1px 2px 9px #000000",
                 }}
               >
                 <ReactCountryFlag
