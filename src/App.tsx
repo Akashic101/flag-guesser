@@ -161,14 +161,22 @@ export default function App() {
         >
           <Center maw={200} h={600} mx="auto">
             {randomCountry ? (
-              <ReactCountryFlag
-                countryCode={randomCountry.countryISOCode.toString()}
-                svg
+              <div
                 style={{
-                  width: "20em",
-                  height: "20em",
+                  boxShadow: "#000000",
+                  margin: "0px",
+                  padding: "0px",
                 }}
-              />
+              >
+                <ReactCountryFlag
+                  countryCode={randomCountry.countryISOCode.toString()}
+                  svg
+                  style={{
+                    width: "20em",
+                    height: "15em",
+                  }}
+                />
+              </div>
             ) : (
               <Text></Text>
             )}
