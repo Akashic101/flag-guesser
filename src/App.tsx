@@ -12,6 +12,7 @@ import {
   Center,
   Space,
   Checkbox,
+  MultiSelect,
 } from "@mantine/core";
 import { useColorScheme, useLocalStorage } from "@mantine/hooks";
 import { SegmentedToggle } from "./components/segmentedToggle";
@@ -28,6 +29,15 @@ interface Country {
 interface ContinentFilters {
   [continent: string]: boolean;
 }
+
+const continents = [
+  "Africa",
+  "Asia",
+  "Europe",
+  "NorthAmerica",
+  "Oceania",
+  "SouthAmerica",
+];
 
 const initialContinentFilters: ContinentFilters = {
   Africa: true,
@@ -53,8 +63,7 @@ export default function App() {
   );
 
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
-
-  const [randomCountry, setRandomCountry] = useState<Country | null>();
+  const [randomCountry, setRandomCountry] = useState<Country>();
 
   const toggleColorScheme = (value?: ColorScheme): void =>
     setColorScheme(value ?? (colorScheme === "dark" ? "light" : "dark"));
@@ -64,8 +73,10 @@ export default function App() {
   );
 
   const getRandomCountries = () => {
-    const shuffledCountries = filteredCountries.sort(() => 0.5 - Math.random());
-    const selected = shuffledCountries.slice(0, 4);
+    const filteredAndShuffledCountries = filteredCountries.sort(
+      () => 0.5 - Math.random()
+    );
+    const selected = filteredAndShuffledCountries.slice(0, 4);
     setSelectedCountries(selected);
     const randomIndex = Math.floor(Math.random() * selected.length);
     setRandomCountry(selected[randomIndex]);
@@ -96,18 +107,16 @@ export default function App() {
     getRandomCountries();
   };
 
-  const handleContinentFilterChange = (continent: string) => {
-    if (
-      Object.values(continentFilters).filter(Boolean).length === 1 &&
-      continentFilters[continent]
-    ) {
+  const handleMultiSelectChange = (values: string[]) => {
+    if (values.length === 0) {
       return;
     }
-
-    setContinentFilters({
-      ...continentFilters,
-      [continent]: !continentFilters[continent],
-    });
+    setContinentFilters(
+      continents.reduce((filters, continent) => {
+        filters[continent] = values.includes(continent);
+        return filters;
+      }, {} as Record<string, boolean>)
+    );
     getRandomCountries();
   };
 
@@ -136,30 +145,36 @@ export default function App() {
                   </Group>
                   <Group>
                     <SegmentedToggle />
-                    {Object.keys(continentFilters).map((continent) => (
-                      <Checkbox
-                        label={continent}
-                        key={continent}
-                        checked={continentFilters[continent]}
-                        onChange={() => handleContinentFilterChange(continent)}
-                      >
-                        {continent}
-                      </Checkbox>
-                    ))}
-                    <Button
-                      variant="gradient"
-                      gradient={{ from: "orange", to: "red" }}
-                      onClick={resetCounters}
-                    >
-                      Reset Counters
-                    </Button>
                   </Group>
                 </Group>
               }
             </Header>
           }
         >
-          <Center maw={200} h={600} mx="auto">
+          <MultiSelect
+            data={continents.map((continent) => ({
+              value: continent,
+              label: continent,
+            }))}
+            value={Object.keys(continentFilters).filter(
+              (continent) => continentFilters[continent]
+            )}
+            onChange={handleMultiSelectChange}
+            size="xl"
+            placeholder="Select continents"
+            multiple
+          />
+          <Space h={"md"} />
+          <Stack align="end">
+            <Button
+              variant="gradient"
+              gradient={{ from: "orange", to: "red" }}
+              onClick={resetCounters}
+            >
+              Reset Counters
+            </Button>
+          </Stack>
+          <Center maw={100} h={300} mx="auto">
             {randomCountry ? (
               <div
                 style={{
@@ -189,7 +204,6 @@ export default function App() {
                 {country.countryFullName}
               </Button>
             ))}
-            <Space h="md" />
             {correctCountryInfo && <Text fz="xl">{correctCountryInfo}</Text>}
             <Text fz="xl">Correct Choices: {correctChoices}</Text>
             <Text fz="xl">Wrong Choices: {wrongChoices}</Text>
