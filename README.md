@@ -1,46 +1,33 @@
-# Getting Started with Create React App
+# Flag Guesser
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<img src="./public/logo512.png" alt="Flag Guesser logo" align="right" width="120" height="178">
 
-## Available Scripts
+Flag Guesser is a small, simple and lightweight game to test the users skills in the flag-knowledge
 
-In the project directory, you can run:
+## How It Works
 
-### `npm start`
+1. FG chooses four random countries from a list of 195. It then randomly chooses one of the four that will
+   be the flag the user will be tested on. The user can choose the continents the game selects countries from
+   as well in the header where he can also reset the score.
+2. The SVG of the flag gets rendered and the user then chooses the country from the previous made selection
+   of four countries. After making his decision the game will inform the user if his choice was the correct
+   or wrong one and update the score accordingly.
+3. If the user chose wrong the correct country will also be displayed
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Installation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+There are two ways to install and run FG
 
-### `npm test`
+### Docker
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Run the command `docker run -p 3000:3000 --name flag-guesser akashic/flag-guesser:latest` to automatically
+download, install and run the container. You can then access the website at `http://localhost:3000/`
 
-### `npm run build`
+### NPM
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository: `https://github.com/Akashic101/flag-guesser.git`
+2. Navigate into the folder: `cd flag-guesser`
+3. Install the necessary dependencies: `npm install`
+4. Start the application: `npm start`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+You can access the application just like with Docker at `http://localhost:3000/`
