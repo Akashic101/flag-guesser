@@ -165,20 +165,24 @@ export default function App() {
               </Header>
             }
           >
-            <MultiSelect
-              data={continents.map((continent) => ({
-                value: continent,
-                label: continent,
-              }))}
-              value={Object.keys(continentFilters).filter(
-                (continent) => continentFilters[continent]
-              )}
-              onChange={handleMultiSelectChange}
-              size="xl"
-              placeholder="Select continents"
-              multiple
-            />
-            <Space h={"md"} />
+            {!gameStarted && (
+              <>
+                <MultiSelect
+                  data={continents.map((continent) => ({
+                    value: continent,
+                    label: continent,
+                  }))}
+                  value={Object.keys(continentFilters).filter(
+                    (continent) => continentFilters[continent]
+                  )}
+                  onChange={handleMultiSelectChange}
+                  size="xl"
+                  placeholder="Select continents"
+                  multiple
+                />
+                <Space h={"md"} />
+              </>
+            )}
             <Stack align="end">
               {!gameStarted && (
                 <Button
@@ -225,7 +229,7 @@ export default function App() {
                   />
                 </div>
               ) : (
-                <Text>A country should be placed here</Text>
+                <Text>A country should be placed here. Guess it wasn't</Text>
               )}
             </Center>
             <Stack align="center">
@@ -238,7 +242,11 @@ export default function App() {
                   {country.countryFullName}
                 </Button>
               ))}
-              {correctCountryInfo && <Text fz="xl">{correctCountryInfo}</Text>}
+              {correctCountryInfo && (
+                <Text fw={800} fz="xl">
+                  {correctCountryInfo}
+                </Text>
+              )}
               <Text c="green" fz="xl" fw={500}>
                 Correct Choices: {correctChoices}
               </Text>
