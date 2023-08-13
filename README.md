@@ -1,6 +1,6 @@
 # Flag Guesser
 
-<img src="./public/logo512.png" alt="Flag Guesser logo" align="right" width="120" height="178">
+<img src="./public/logo512.png" alt="Flag Guesser logo" align="right" width="120" height="120">
 
 Flag Guesser is a small, simple and lightweight game to test the users skills in the flag-knowledge
 
