@@ -13,7 +13,6 @@ import {
   Space,
   MultiSelect,
   Modal,
-  Title,
 } from "@mantine/core";
 import { useColorScheme, useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { SegmentedToggle } from "./components/segmentedToggle";
@@ -21,6 +20,7 @@ import ReactCountryFlag from "react-country-flag";
 import { useEffect, useState } from "react";
 import Logo from "./components/logo";
 import { ModalsProvider } from "@mantine/modals";
+import StatsCard from "./components/StatsCard";
 
 interface Country {
   countryFullName: string;
@@ -66,8 +66,13 @@ export default function App() {
     initialContinentFilters
   );
 
-  const [timeLeft, setTimeLeft] = useState<number>(60); // 60 seconds
-  const [gameStarted, setGameStarted] = useState<boolean>(false); // Track if the game has started
+  const [score, setScore] = useState<number>(0); // Player's score
+  const [correctStreak, setCorrectStreak] = useState<number>(0); // Number of consecutive correct guesses
+
+  const [selectedContinents, setSelectedContinents] = useState<string[]>([]);
+
+  const [timeLeft, setTimeLeft] = useState<number>(60);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
 
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
   const [randomCountry, setRandomCountry] = useState<Country>();
@@ -92,10 +97,14 @@ export default function App() {
   const compareCountry = (selectedCountry: Country) => {
     if (selectedCountry === randomCountry) {
       setCorrectChoices(correctChoices + 1);
+      setScore((prevScore) => prevScore + (100 + 10 * correctStreak)); // Adding points with streak multiplier
+      setCorrectStreak(correctStreak + 1); // Increment streak
       getRandomCountries();
       setCorrectCountryInfo("That was the correct answer");
     } else {
       setWrongChoices(wrongChoices + 1);
+      setScore((prevScore) => Math.max(0, prevScore - 50)); // Deducting points for wrong choice
+      setCorrectStreak(0);
       getRandomCountries();
       setCorrectCountryInfo(
         `The correct country was: ` + randomCountry?.countryFullName
@@ -104,6 +113,8 @@ export default function App() {
   };
 
   const resetCounters = () => {
+    setScore(0);
+    setCorrectStreak(0);
     setCorrectChoices(0);
     setWrongChoices(0);
     getRandomCountries();
@@ -128,6 +139,9 @@ export default function App() {
 
   useEffect(() => {
     if (gameStarted && timeLeft === 0) {
+      setSelectedContinents(
+        continents.filter((continent) => continentFilters[continent])
+      );
       open();
       setGameStarted(false);
     }
@@ -198,7 +212,9 @@ export default function App() {
                 <Button
                   color="blue"
                   onClick={() => {
-                    setTimeLeft(60);
+                    setScore(0);
+                    setCorrectStreak(0);
+                    setTimeLeft(5);
                     setCorrectChoices(0);
                     setWrongChoices(0);
                     setGameStarted(true); // Start the game when the button is clicked
@@ -209,7 +225,10 @@ export default function App() {
                 </Button>
               )}
               {gameStarted && (
-                <Text fw={700}>Time left: {timeLeft} seconds</Text>
+                <Stack>
+                  <Text fw={700}>Time left: {timeLeft} seconds</Text>
+                  <Text fw={700}>Score: {score}</Text>
+                </Stack>
               )}
             </Stack>
             <Center maw={100} h={300} mx="auto">
@@ -255,18 +274,14 @@ export default function App() {
               </Text>
             </Stack>
           </AppShell>
-          <Modal id="deleteAusschreibungModal" opened={opened} onClose={close}>
-            <Title variant="gradient" gradient={{ from: "green", to: "blue" }}>
-              Game over
-            </Title>
-            <Text id="modalText" c="dimmed">
-              You got {correctChoices} out of {correctChoices + wrongChoices}.
-              That is{" "}
-              {Math.round(
-                (correctChoices / (correctChoices + wrongChoices)) * 100
-              )}
-              %
-            </Text>
+          <Modal opened={opened} onClose={close}>
+            <StatsCard
+              continents={selectedContinents.join(", ")}
+              correctChoices={correctChoices}
+              wrongChoices={wrongChoices}
+              totalChoices={correctChoices + wrongChoices}
+              score={score}
+            />
           </Modal>
         </ModalsProvider>
       </MantineProvider>
