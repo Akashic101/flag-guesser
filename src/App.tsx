@@ -66,8 +66,8 @@ export default function App() {
     initialContinentFilters
   );
 
-  const [score, setScore] = useState<number>(0); // Player's score
-  const [correctStreak, setCorrectStreak] = useState<number>(0); // Number of consecutive correct guesses
+  const [score, setScore] = useState<number>(0);
+  const [correctStreak, setCorrectStreak] = useState<number>(0);
 
   const [selectedContinents, setSelectedContinents] = useState<string[]>([]);
 
@@ -97,13 +97,13 @@ export default function App() {
   const compareCountry = (selectedCountry: Country) => {
     if (selectedCountry === randomCountry) {
       setCorrectChoices(correctChoices + 1);
-      setScore((prevScore) => prevScore + (100 + 10 * correctStreak)); // Adding points with streak multiplier
-      setCorrectStreak(correctStreak + 1); // Increment streak
+      setScore((prevScore) => prevScore + (100 + 10 * correctStreak));
+      setCorrectStreak(correctStreak + 1);
       getRandomCountries();
       setCorrectCountryInfo("That was the correct answer");
     } else {
       setWrongChoices(wrongChoices + 1);
-      setScore((prevScore) => Math.max(0, prevScore - 50)); // Deducting points for wrong choice
+      setScore((prevScore) => Math.max(0, prevScore - 50));
       setCorrectStreak(0);
       getRandomCountries();
       setCorrectCountryInfo(
@@ -214,7 +214,7 @@ export default function App() {
                   onClick={() => {
                     setScore(0);
                     setCorrectStreak(0);
-                    setTimeLeft(5);
+                    setTimeLeft(60);
                     setCorrectChoices(0);
                     setWrongChoices(0);
                     setGameStarted(true); // Start the game when the button is clicked
