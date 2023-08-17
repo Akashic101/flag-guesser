@@ -81,7 +81,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
           Statistics
         </Text>
         <Text c="dimmed" ta="center" fz="sm">
-          {continents}
+          Selected Continent(s): {continents}
         </Text>
 
         <Progress
