@@ -26,6 +26,8 @@ interface Country {
   countryFullName: string;
   countryISOCode: string;
   continent: string;
+  capital?: string;
+  funFact?: string;
 }
 
 interface ContinentFilters {
@@ -73,9 +75,20 @@ export default function App() {
 
   const [timeLeft, setTimeLeft] = useState<number>(60);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-
+  const [activeHint, setActiveHint] = useState<boolean>(false);
+  const [hint, setHint] = useState<string | undefined>("");
+  const [pointsToGain, setPointsToGain] = useState<number>(100);
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
-  const [randomCountry, setRandomCountry] = useState<Country>();
+  const [randomCountry, setRandomCountry] = useState<Country>({
+    capital: "Berlin",
+    countryISOCode: "de",
+    continent: "Europe",
+    countryFullName: "Germany",
+  });
+
+  const [lastChosenCountryIndices, setLastChosenCountryIndices] = useState<
+    Set<number>
+  >(new Set());
 
   const toggleColorScheme = (value?: ColorScheme): void =>
     setColorScheme(value ?? (colorScheme === "dark" ? "light" : "dark"));
@@ -84,32 +97,61 @@ export default function App() {
     (country) => continentFilters[country.continent]
   );
 
-  const getRandomCountries = () => {
-    const shuffledCountries = filteredCountries.sort(() => 0.5 - Math.random());
-    const selected = shuffledCountries.slice(0, 4);
-    setSelectedCountries(selected);
+  const getRandomCountryWithDistance = (excludeIndices: number[] = []) => {
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * filteredCountries.length);
+    } while (
+      lastChosenCountryIndices.has(newIndex) ||
+      excludeIndices.includes(newIndex)
+    );
+    return newIndex;
+  };
 
-    const randomIndex = Math.floor(Math.random() * selected.length);
-    setRandomCountry(selected[randomIndex]);
+  const getRandomCountries = () => {
+    const randomIndices: number[] | undefined = [];
+
+    while (randomIndices.length < 4) {
+      const randomIndex = getRandomCountryWithDistance(randomIndices);
+      randomIndices.push(randomIndex);
+    }
+
+    const selectedCountriesArray = randomIndices.map(
+      (index) => filteredCountries[index]
+    );
+    setSelectedCountries(selectedCountriesArray);
+
+    const selectedCountryIndex = Math.floor(Math.random() * 4);
+    const selectedCountry = selectedCountriesArray[selectedCountryIndex];
+    setRandomCountry(selectedCountry);
     setCorrectCountryInfo("");
+
+    setLastChosenCountryIndices((prevSet) => {
+      const newSet = new Set(prevSet);
+      if (newSet.size >= 10) {
+        newSet.delete([...newSet][0]); // Remove the oldest entry
+      }
+      newSet.add(randomIndices[selectedCountryIndex]); // Add the index of the correct country
+      return newSet;
+    });
   };
 
   const compareCountry = (selectedCountry: Country) => {
     if (selectedCountry === randomCountry) {
       setCorrectChoices(correctChoices + 1);
-      setScore((prevScore) => prevScore + (100 + 10 * correctStreak));
+      setScore((prevScore) => prevScore + (pointsToGain + 10 * correctStreak));
       setCorrectStreak(correctStreak + 1);
-      getRandomCountries();
       setCorrectCountryInfo("That was the correct answer");
     } else {
       setWrongChoices(wrongChoices + 1);
       setScore((prevScore) => Math.max(0, prevScore - 50));
       setCorrectStreak(0);
-      getRandomCountries();
       setCorrectCountryInfo(
         `The correct country was: ` + randomCountry?.countryFullName
       );
     }
+    setActiveHint(false);
+    getRandomCountries();
   };
 
   const resetCounters = () => {
@@ -118,6 +160,7 @@ export default function App() {
     setCorrectChoices(0);
     setWrongChoices(0);
     getRandomCountries();
+    setPointsToGain(100);
   };
 
   const handleMultiSelectChange = (values: string[]) => {
@@ -132,6 +175,16 @@ export default function App() {
     );
     getRandomCountries();
   };
+
+  function showHint() {
+    if (randomCountry?.capital) {
+      setHint("The capital of this country is " + randomCountry?.capital);
+    } else {
+      setHint(randomCountry?.funFact);
+    }
+    setActiveHint(true);
+    setPointsToGain(10);
+  }
 
   useEffect(() => {
     getRandomCountries();
@@ -217,7 +270,7 @@ export default function App() {
                     setTimeLeft(60);
                     setCorrectChoices(0);
                     setWrongChoices(0);
-                    setGameStarted(true); // Start the game when the button is clicked
+                    setGameStarted(true);
                     getRandomCountries();
                   }}
                 >
@@ -252,6 +305,13 @@ export default function App() {
               )}
             </Center>
             <Stack align="center">
+              {!activeHint && (
+                <Button size={"xs"} onClick={showHint} variant="outline">
+                  Show hint
+                </Button>
+              )}
+              {activeHint && <Text>{hint}</Text>}
+
               {selectedCountries.map((country) => (
                 <Button
                   w={350}
