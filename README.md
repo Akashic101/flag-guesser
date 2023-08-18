@@ -14,6 +14,33 @@ Flag Guesser is a small, simple and lightweight game to test the users skills in
    or wrong one and update the score accordingly.
 3. If the user chose wrong the correct country will also be displayed
 
+## Patch Notes
+
+**Version 0.2.1**
+* Removed chance of duplicates occurring
+  * (Please report back if you notice less repeating countries)
+* Added better end-card after a game
+* Added score
+* Added more countries
+* Added hint-button
+  * The hint is currently - unless in very rare cases - only the capital of the country. These will gradually be replaced with a better fitting fact about the country (suggestions welcome)
+  
+**Version 0.2.0**
+* Added score and stats
+* Cleaned up build-process and dependencies
+
+**Version 0.1.0**
+* Added selectable continents
+* Added 1.minute game
+* Improved mobile layout
+* Improved UI/UX
+
+## Roadmap
+* Show breakdown on scoreboard of how many countries in each continent the user guessed correctly
+* Add better hints for each country
+* Further minimize the chance of repeating countries
+* More game-modes
+
 ## Installation
 
 There are two ways to install and run FG
